@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { FilmLibrary } from "./FilmLibrary.js"
+import { Film } from './Film.js'
 
 function printAll(films) {
     films.forEach((film) => {
@@ -33,7 +34,8 @@ async function main() {
     printAll(filmByTitle)
 
     // 2.a
-
+    const newFilm = new Film(null, 'Interstellar', 1, '2026-03-19', 4, 1)
+    filmLibrary.addNewFilm(newFilm)
     // 2.b
 
     // 2.c

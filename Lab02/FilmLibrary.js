@@ -70,6 +70,16 @@ function FilmLibrary() {
         })
     }
 
+    // Method to store a new film into the database
+    this.addNewFilm = function(film) {
+        return new Promise((resolve, reject) => {
+            const sql = 'INSERT INTO films (title, isFavorite, rating, watchDate, userId) VALUES (?, ?, ?, ?, ?)'
+            db.run(sql, [`%${film.title}%`, film.favorite, film.rating, film.watchDate, film.userId], (err) => {
+                if(err) reject(err)
+                else resolve('New film added to the database!')
+            })
+        })
+    }
 }
 
 export{FilmLibrary}
