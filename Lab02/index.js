@@ -33,12 +33,14 @@ async function main() {
     const filmByTitle = await filmLibrary.getFilmByTitle(title)
     printAll(filmByTitle)
 
-    // 2.a
-    const newFilm = new Film(null, 'Interstellar', 1, '2026-03-19', 4, 1)
-    filmLibrary.addNewFilm(newFilm)
-    // 2.b
+    // 2.a add new film
+    console.log(await filmLibrary.addNewFilm(new Film(null, 'Interstellar', 1, '2026-03-19', 4, 1)))
 
-    // 2.c
+    // 2.b delete film by id
+    console.log(await filmLibrary.deleteFilmById(10))
+
+    // 2.c delete watch date from all films
+    console.log(await filmLibrary.deleteAllWatchDates())
 }
 
 main()

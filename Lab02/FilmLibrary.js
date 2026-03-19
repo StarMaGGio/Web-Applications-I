@@ -74,9 +74,31 @@ function FilmLibrary() {
     this.addNewFilm = function(film) {
         return new Promise((resolve, reject) => {
             const sql = 'INSERT INTO films (title, isFavorite, rating, watchDate, userId) VALUES (?, ?, ?, ?, ?)'
-            db.run(sql, [`%${film.title}%`, film.favorite, film.rating, film.watchDate, film.userId], (err) => {
+            db.run(sql, [`${film.title}`, film.favorite, film.rating, `$${film.watchDate}`, film.userId], (err) => {
                 if(err) reject(err)
                 else resolve('New film added to the database!')
+            })
+        })
+    }
+
+    // Method to delete a movie from the database by his id
+    this.deleteFilmById = function(id) {
+        return new Promise((resolve, reject) => {
+            const sql = 'DELETE FROM films WHERE id == ?'
+            db.run(sql, [id], (err) => {
+                if(err) reject(err)
+                else resolve('Film successfully deleted from the Database!')
+            })
+        })
+    }
+
+    // Method to delete the watch date of all films stored in the database
+    this.deleteAllWatchDates = function() {
+        return new Promise((resolve, reject) => {
+            const sql = 'UPDATE films SET watchDate = NULL'
+            db.run(sql, (err) => {
+                if(err) reject(err)
+                else resolve('Watch date deleted from all films stored in the database!')
             })
         })
     }
