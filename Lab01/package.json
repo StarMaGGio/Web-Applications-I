@@ -1,0 +1,15 @@
+{
+  "name": "lab01",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Mattia",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.19"
+  }
+}
