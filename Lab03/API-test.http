@@ -1,0 +1,11 @@
+@PREFIX=http://localhost:3000/api/v1
+
+GET {{PREFIX}}/films
+
+###
+
+GET {{PREFIX}}/films/favorites
+
+###
+
+GET {{PREFIX}}/films/recent-seen
