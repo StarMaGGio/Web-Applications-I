@@ -77,9 +77,9 @@ function FilmLibrary() {
     this.addNewFilm = function(film) {
         return new Promise((resolve, reject) => {
             const sql = 'INSERT INTO films (title, isFavorite, rating, watchDate, userId) VALUES (?, ?, ?, ?, ?)'
-            db.run(sql, [`${film.title}`, film.favorite, film.rating, `$${film.watchDate}`, film.userId], (err) => {
+            db.run(sql, [`${film.title}`, film.favorite, film.rating, `${film.watchDate}`, film.userId], function(err) {
                 if(err) reject(err)
-                else resolve('New film added to the database!')
+                else resolve(this.lastID)
             })
         })
     }
@@ -115,7 +115,40 @@ function FilmLibrary() {
             const sql = 'SELECT * FROM films WHERE watchDate >= ? AND watchDate <= ? ORDER BY watchDate DESC'
             db.all(sql, [lastMonth, today], (err, rows) => {
                 if(err) reject(err)
-                    else resolve(mapRowsToFilms(rows))
+                else resolve(mapRowsToFilms(rows))
+            })
+        })
+    }
+
+    // Method to retrieve the most rated films (rating == 5)
+    this.getMostRatedFilms = function() {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM films WHERE rating == 5'
+            db.all(sql, (err, rows) => {
+                if(err) reject(err)
+                else resolve(mapRowsToFilms(rows))
+            })
+        })
+    }
+
+    // Method to return unseen films (watchDate IS NULL)
+    this.getUnseenFilms = function() {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM films WHERE watchDate IS NULL'
+            db.all(sql, (err, rows) => {
+                if(err) reject(err)
+                else resolve(mapRowsToFilms(rows))
+            })
+        })
+    }
+
+    // Method to return a film by its id
+    this.getFilmById = function(id) {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM films WHERE id == ?'
+            db.all(sql, [id], (err, rows) => {
+                if(err) reject(err)
+                else resolve(mapRowsToFilms(rows))
             })
         })
     }

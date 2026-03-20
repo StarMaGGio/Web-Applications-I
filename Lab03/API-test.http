@@ -9,3 +9,23 @@ GET {{PREFIX}}/films/favorites
 ###
 
 GET {{PREFIX}}/films/recent-seen
+
+###
+
+GET {{PREFIX}}/films/unseen
+
+###
+
+GET {{PREFIX}}/films/1
+
+###
+
+POST {{PREFIX}}/films/new-film
+Content-Type: application/json
+
+{
+    "title": "Avengers: End Game",
+    "favorite": 1,
+    "watchDate": "2026-01-10",
+    "rating": 5
+}
