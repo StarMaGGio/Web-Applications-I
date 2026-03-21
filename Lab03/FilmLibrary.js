@@ -152,6 +152,30 @@ function FilmLibrary() {
             })
         })
     }
+
+    // Method to update the properties of an existing film
+    this.updateFilm = function(id, title, isFavorite, rating, watchDate, userId) {
+        return new Promise((resolve, reject) => {
+            const sql = `UPDATE films SET
+                            title = COALESCE(?, title),
+                            isFavorite = COALESCE(?,isFavorite),
+                            rating = COALESCE(?, rating),
+                            watchDate = COALESCE(?, watchDate),
+                            userId = COALESCE(?, userId)
+                         WHERE id == ?`
+            db.run(sql, [
+                title ?? null,
+                isFavorite ?? null,
+                rating ?? null,
+                watchDate ?? null,
+                userId ?? null,
+                id
+            ], (err) => {
+                if(err) reject(err)
+                else resolve('Film successfully updated!')
+            })
+        })
+    }
 }
 
 export{FilmLibrary}

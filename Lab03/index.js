@@ -8,14 +8,12 @@ import { Film } from './Film.js'
 const PREFIX = '/api/v1'
 const DATE_FORMAT = 'YYYY-MM-DD'
 
-function printAll(films) {
-    films.forEach((film) => {
-        console.log(`${film}`)
-    })
-}
-
 function internalError(res) {
     return err => res.status(500).json({"error": err.message})
+}
+
+function invalidInputParametersError(res, req) {
+    res.status(500).json(validationResult(req).array())
 }
 
 async function main() {
@@ -62,7 +60,7 @@ async function main() {
     })
 
     // GET /films/:id
-    app.get(PREFIX + '/films/:id', param('id').isNumeric(), async (req, res) => {
+    app.get(PREFIX + '/films/:id', param('id').isInt({min:0}), async (req, res) => {
         if (validationResult(req).isEmpty()) {
             const id = req.params.id
             try {
@@ -73,7 +71,7 @@ async function main() {
                 internalError(err)
             }
         } else {
-            res.status(500).json(validationResult(req).array())
+            invalidInputParametersError(res, req)
         }
     })
 
@@ -94,17 +92,80 @@ async function main() {
                 internalError(err)
             }
         } else {
-            res.status(500).json(validationResult(req).array())
+            invalidInputParametersError(res, req)
         }
     })
 
-    // PUT /films/update-film
+    // POST /films/update-film
+    app.post(PREFIX + '/films/update-film', [
+        body('id').isInt({min:0}).notEmpty(),
+        body('title').optional().isString().notEmpty(),
+        body('favorite').optional().isInt({min:0, max:1}),
+        body('watchDate').optional().isDate({format: DATE_FORMAT}),
+        body('rating').optional().isInt({min:0, max:5}),
+        body('userId').optional().isInt({min:0})
+    ], async (req, res) => {
+        if (validationResult(req).isEmpty()) {
+            const raw_update = req.body
+            try {
+                res.json(await filmLibrary.updateFilm(raw_update.id, raw_update.title, raw_update.isFavorite, raw_update.rating, raw_update.watchDate, raw_update.userId))
+            } catch (err) {
+                internalError(err)
+            }
+        } else {
+            invalidInputParametersError(res, req)
+        }
+    })
 
-    // PUT /films/update-film-rating
+    // POST /films/update-film-rating
+    app.post(PREFIX + '/films/update-film-rating', [
+        body('id').isInt({min:0}).notEmpty(),
+        body('rating').isInt({min:0, max:5})
+    ], async (req, res) => {
+        if (validationResult(req).isEmpty()) {
+            const id = req.body.id
+            const newRating = req.body.rating
+            try {
+                res.json(await filmLibrary.updateFilm(id, undefined, undefined, newRating, undefined, undefined))
+            } catch (err) {
+                internalError(err)
+            }
+        } else {
+            invalidInputParametersError(res, req)
+        }
+    })
 
-    // PUT /films/change-favorite
+    // POST /films/change-favorite
+    app.post(PREFIX + '/films/change-favorite', [
+        body('id').isInt({min:0}).notEmpty(),
+        body('favorite').isInt({min:0, max:1})
+    ], async (req, res) => {
+        if (validationResult(req).isEmpty()) {
+            const id = req.body.id
+            const favorite = req.body.favorite
+            try {
+                res.json(await filmLibrary.updateFilm(id, undefined, favorite, undefined, undefined, undefined))
+            } catch (err) {
+                internalError(err)
+            }
+        } else {
+            invalidInputParametersError(res, req)
+        }
+    })
 
     // DELETE /films/:id
+    app.delete(PREFIX + '/films/:id', param('id').isInt({min:0}), async (req, res) => {
+        if (validationResult(req).isEmpty()) {
+            const id = req.params.id
+            try {
+                res.json(await filmLibrary.deleteFilmById(id))
+            } catch (err) {
+                internalError(err)
+            }
+        } else {
+            invalidInputParametersError(res, req)
+        }
+    })
 
     app.listen(3000, () => { console.log('Server started') })
 }

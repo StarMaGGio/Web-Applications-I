@@ -16,7 +16,7 @@ GET {{PREFIX}}/films/unseen
 
 ###
 
-GET {{PREFIX}}/films/1
+GET {{PREFIX}}/films/7
 
 ###
 
@@ -24,8 +24,45 @@ POST {{PREFIX}}/films/new-film
 Content-Type: application/json
 
 {
+    "title": "Superman",
+    "favorite": 0,
+    "watchDate": "2026-01-11",
+    "rating": 3
+}
+
+###
+
+POST {{PREFIX}}/films/update-film
+Content-Type: application/json
+
+{
+    "id": 7,
     "title": "Avengers: End Game",
     "favorite": 1,
-    "watchDate": "2026-01-10",
-    "rating": 5
+    "watchDate": "2026-01-11",
+    "userId": 1
 }
+
+###
+
+POST {{PREFIX}}/films/update-film-rating
+Content-Type: application/json
+
+{
+    "id": 1,
+    "rating": 3
+}
+
+###
+
+POST {{PREFIX}}/films/change-favorite
+Content-Type: application/json
+
+{
+    "id": 1,
+    "favorite": 1
+}
+
+###
+
+DELETE {{PREFIX}}/films/8
