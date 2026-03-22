@@ -13,7 +13,7 @@ function internalError(res) {
 }
 
 function invalidInputParametersError(res, req) {
-    res.status(500).json(validationResult(req).array())
+    res.status(400).json(validationResult(req).array())
 }
 
 async function main() {
@@ -87,7 +87,7 @@ async function main() {
             const film = new Film(null, raw_film.title, raw_film.favorite, raw_film.watchDate, raw_film.rating, 1)
             try {
                 const id = await filmLibrary.addNewFilm(film)
-                res.json({id: id})
+                res.status(201).json({id: id})
             } catch (err) {
                 internalError(err)
             }

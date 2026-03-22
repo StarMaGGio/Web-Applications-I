@@ -12,11 +12,15 @@ GET {{PREFIX}}/films/recent-seen
 
 ###
 
+GET {{PREFIX}}/films/most-rated
+
+###
+
 GET {{PREFIX}}/films/unseen
 
 ###
 
-GET {{PREFIX}}/films/7
+GET {{PREFIX}}/films/-1
 
 ###
 
@@ -24,9 +28,9 @@ POST {{PREFIX}}/films/new-film
 Content-Type: application/json
 
 {
-    "title": "Superman",
+    "title": "Bee Movie",
     "favorite": 0,
-    "watchDate": "2026-01-11",
+    "watchDate": "2026-02-20",
     "rating": 3
 }
 
@@ -39,7 +43,7 @@ Content-Type: application/json
     "id": 7,
     "title": "Avengers: End Game",
     "favorite": 1,
-    "watchDate": "2026-01-11",
+    "watchDate": "2026-01-12",
     "userId": 1
 }
 
@@ -50,7 +54,7 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "rating": 3
+    "rating": 4
 }
 
 ###
@@ -60,9 +64,9 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "favorite": 1
+    "favorite": 0
 }
 
 ###
 
-DELETE {{PREFIX}}/films/8
+DELETE {{PREFIX}}/films/9
