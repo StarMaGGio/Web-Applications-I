@@ -7,3 +7,4 @@ This repository contains the evolution of the **Film Library** web application d
 * `Lab02`: database implementation with sqlite3 and Promises.
 * `Lab03`: API development with express.
 * `Lab04`: front-end design with HTML, CSS and Bootstrap.
+* `Lab05`: re-designing the web application with React.
