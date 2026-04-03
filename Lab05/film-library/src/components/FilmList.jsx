@@ -1,15 +1,15 @@
 import {Container, Table, Button} from 'react-bootstrap'
 
 function FilmList(props) {
-    const filmLibrary = props.library;
+    const filteredFilms = props.filteredFilms;
 
     return(
         <>
             <Container fluid className='d-grid gap-1 align-items-left'>
-                <h1 className='text-start'>All Films</h1>
+                <h1 className='text-start'>{props.filterName}</h1>
                 <Table>
                     <tbody>
-                        {filmLibrary.list.map((f) => <FilmRow key={f.id} f={f}></FilmRow>)}
+                        {filteredFilms.map((f) => <FilmRow key={f.id} f={f}></FilmRow>)}
                     </tbody>
                 </Table>
             </Container>
