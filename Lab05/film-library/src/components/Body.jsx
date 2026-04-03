@@ -2,7 +2,8 @@ import {Container, Row, Col} from 'react-bootstrap'
 import Sidebar from "./Sidebar"
 import FilmList from "./FilmList"
 
-function Body() {
+function Body(props) {
+
     return(
         <>
             <Container fluid className='mt-3'>
@@ -14,7 +15,7 @@ function Body() {
                     
                     {/* films list on the right */}
                     <Col xs={8}>
-                        <FilmList></FilmList>
+                        <FilmList library={props.library}></FilmList>
                     </Col>
                 </Row>
             </Container>

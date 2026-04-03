@@ -8,6 +8,3 @@ This repository contains the evolution of the **Film Library** web application d
 * `Lab03`: API development with express.
 * `Lab04`: front-end design with HTML, CSS and Bootstrap.
 * `Lab05`: re-designing the web application with React.
-
-## To-Do
-* Lab05 -> Props and States for visualizing films
