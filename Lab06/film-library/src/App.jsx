@@ -18,15 +18,22 @@ function App() {
   const [library, setLibrary] = useState(filmLibrary)
 
   // Function to add a new film to the list to be passed
-  const addFilm = (text) => {
-    // implement the function
+  const addFilm = (title, isFavorite, date, rating) => {
+    const newId = Math.max( ... library.list.map(f=>f.id) ) + 1
+
+    const newFilm = new Film(newId, title, isFavorite, date, rating, 1)
+
+    setLibrary(prevState => {
+		const newState = new FilmLibrary(prevState.list)
+		return {...newState.addFilm(newFilm)}
+	})
   }
 
   return (
     <>
       <Header></Header>
 
-      <Body library={library}></Body>
+      <Body library={library} addFilm={addFilm}></Body>
     </>
   )
 }

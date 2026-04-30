@@ -6,8 +6,7 @@ import validator from 'validator';
 function AddFilmForm(props) {
   const [title, setTitle] = useState("");
   const [watchDate, setWatchDate] = useState(dayjs().format("YYYY-MM-DD"));
-  const [rating, setRating] = useState(0);
-  const [favorite, setFavorite] = useState(false);
+  const [rating, setRating] = useState();
   const [validationWarning, setValidationWarning] = useState(false);
   const [warningText, setWarningText] = useState("")
 
@@ -27,6 +26,7 @@ function AddFilmForm(props) {
     }
 
     // Update film list using props
+    props.addFilm(title, false, dayjs(watchDate), rating)
 
     // Close the form
     props.setMode("display");
@@ -45,13 +45,6 @@ function AddFilmForm(props) {
             setTitle(e.target.value);
           }}
         ></Form.Control>
-        <Form.Label>Favorite</Form.Label>
-        <Form.Check
-          value={favorite}
-          onChange={(e) => {
-            setFavorite(e.target.value);
-          }}
-        ></Form.Check>
         <Form.Label>Watch date</Form.Label>
         <Form.Control
           type="date"

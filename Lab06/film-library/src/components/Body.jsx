@@ -39,7 +39,7 @@ function Body(props) {
                     
                     {/* films list on the right */}
                     <Col xs={8}>
-                        <FilmList filteredFilms={filteredFilms} filterName={activeFilter} setMode={setMode} mode={mode}></FilmList>
+                        <FilmList filteredFilms={filteredFilms} filterName={activeFilter} setMode={setMode} mode={mode} addFilm={props.addFilm}></FilmList>
                     </Col>
                 </Row>
             </Container>

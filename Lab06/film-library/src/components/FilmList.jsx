@@ -25,7 +25,7 @@ function FilmList(props) {
           <i className="bi bi-plus-lg"></i>
         </Button>
       )}
-      {props.mode == "add" && <AddFilmForm setMode={props.setMode} />}
+      {props.mode == "add" && <AddFilmForm setMode={props.setMode} addFilm={props.addFilm}/>}
     </>
   );
 }

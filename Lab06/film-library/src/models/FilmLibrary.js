@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
 
-function FilmLibrary() {
-    this.list = [] // Films collection
+function FilmLibrary(oldList = []) {
+    this.list = [...oldList] // Copy the list to keep it immutable
 
     // Method to add a new film
     this.addFilm = function(film) {
         this.list.push(film)
+        return this // returns the updated instance
     }
 
     // Method to return the formatted list of films
