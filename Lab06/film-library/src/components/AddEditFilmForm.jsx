@@ -3,7 +3,7 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import validator from 'validator';
 
-function AddFilmForm(props) {
+function AddEditFilmForm(props) {
   const [title, setTitle] = useState("");
   const [watchDate, setWatchDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [rating, setRating] = useState();
@@ -26,7 +26,10 @@ function AddFilmForm(props) {
     }
 
     // Update film list using props
-    props.addFilm(title, false, dayjs(watchDate), rating)
+    if (props.goal == 'add')
+      props.addFilm(title, false, dayjs(watchDate), rating)
+    if (props.goal == 'edit')
+      props.editFilm(props.selectedFilmId, title, false, dayjs(), rating)
 
     // Close the form
     props.setMode("display");
@@ -59,7 +62,7 @@ function AddFilmForm(props) {
         ></Form.Control>
       </Form.Group>
       <Button variant="primary" type="submit">
-        Add Film
+        {props.goal=='add' ? 'Add film' : 'Edit film'}
       </Button>
       <Button
         variant="secondary"
@@ -72,4 +75,4 @@ function AddFilmForm(props) {
   );
 }
 
-export default AddFilmForm
+export default AddEditFilmForm

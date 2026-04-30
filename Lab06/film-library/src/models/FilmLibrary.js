@@ -47,6 +47,7 @@ function FilmLibrary(oldList = []) {
     // Method to remove a Film
     this.removeFilm = function(id) {
         this.list = this.list.filter(film => film.id !== id) // Keep only films whose id is different form the passed one
+        return this
     }
 
     // Method to update a film rating by his id
@@ -60,6 +61,7 @@ function FilmLibrary(oldList = []) {
                 console.log("Errore: rating value is not valid")
             }
         } else console.log("Errore: film not found")
+        return this
     }
 
 }

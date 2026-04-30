@@ -17,6 +17,13 @@ function App() {
 
   const [library, setLibrary] = useState(filmLibrary)
 
+  const deleteFilm = (id) => {
+    setLibrary(prevState => {
+      const newState = new FilmLibrary(prevState.list)
+      return {...newState.removeFilm(id)}
+    })
+  }
+
   // Function to add a new film to the list to be passed
   const addFilm = (title, isFavorite, date, rating) => {
     const newId = Math.max( ... library.list.map(f=>f.id) ) + 1
@@ -24,16 +31,23 @@ function App() {
     const newFilm = new Film(newId, title, isFavorite, date, rating, 1)
 
     setLibrary(prevState => {
-		const newState = new FilmLibrary(prevState.list)
-		return {...newState.addFilm(newFilm)}
-	})
+      const newState = new FilmLibrary(prevState.list)
+      return {...newState.addFilm(newFilm)}
+	  })
+  }
+
+  const editFilm = (id, title, isFavorite, date, rating) => {
+    setLibrary(prevState => {
+      const newState = new FilmLibrary(prevState.list)
+      return {...newState.updateRating(id, rating)}
+    })
   }
 
   return (
     <>
       <Header></Header>
 
-      <Body library={library} addFilm={addFilm}></Body>
+      <Body library={library} addFilm={addFilm} deleteFilm={deleteFilm} editFilm={editFilm}></Body>
     </>
   )
 }

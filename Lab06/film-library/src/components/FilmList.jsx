@@ -1,8 +1,10 @@
 import { Container, Table, Button} from "react-bootstrap";
-import AddFilmForm from "./AddFilmForm";
+import AddEditFilmForm from "./AddEditFilmForm";
+import { useState } from "react";
 
 function FilmList(props) {
   const filteredFilms = props.filteredFilms;
+  const [selectedFilmId, setSelectedFilmId] = useState()
 
   return (
     <>
@@ -11,7 +13,7 @@ function FilmList(props) {
         <Table>
           <tbody>
             {filteredFilms.map((f) => (
-              <FilmRow key={f.id} f={f}></FilmRow>
+              <FilmRow key={f.id} f={f} deleteFilm={props.deleteFilm} setMode={props.setMode} setSelectedFilm={setSelectedFilmId}></FilmRow>
             ))}
           </tbody>
         </Table>
@@ -25,7 +27,7 @@ function FilmList(props) {
           <i className="bi bi-plus-lg"></i>
         </Button>
       )}
-      {props.mode == "add" && <AddFilmForm setMode={props.setMode} addFilm={props.addFilm}/>}
+      {(props.mode == "add" || props.mode == "edit") && <AddEditFilmForm setMode={props.setMode} addFilm={props.addFilm} editFilm={props.editFilm} goal={props.mode} selectedFilmId={selectedFilmId}/>}
     </>
   );
 }
@@ -49,10 +51,10 @@ function FilmRow(props) {
         <div className="d-flex justify-content-end align-items-center gap-3">
           <Score score={film.rating}></Score>
           <div>
-            <Button variant="light">
+            <Button variant="light" onClick={()=>{props.setMode("edit"); props.setSelectedFilm(props.f.id)}}>
               <i className="bi bi-pencil-square"></i>
             </Button>
-            <Button variant="light">
+            <Button variant="light" onClick={()=>props.deleteFilm(props.f.id)}>
               <i className="bi bi-trash"></i>
             </Button>
           </div>
