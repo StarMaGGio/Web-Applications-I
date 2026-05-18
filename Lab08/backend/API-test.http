@@ -1,0 +1,76 @@
+@PREFIX=http://localhost:3000/api/v1
+
+GET {{PREFIX}}/films
+
+###
+
+GET {{PREFIX}}/films/favorites
+
+###
+
+GET {{PREFIX}}/films/recent-seen
+
+###
+
+GET {{PREFIX}}/films/most-rated
+
+###
+
+GET {{PREFIX}}/films/unseen
+
+###
+
+GET {{PREFIX}}/films/-1
+
+###
+
+POST {{PREFIX}}/films/new-film
+Content-Type: application/json
+
+{
+    "title": "Bee Movie",
+    "favorite": 0,
+    "watchDate": "2026-02-20",
+    "rating": 3
+}
+
+###
+
+POST {{PREFIX}}/films/update-film
+Content-Type: application/json
+
+{
+    "id": 7,
+    "title": "Avengers: End Game",
+    "favorite": 1,
+    "watchDate": "2026-01-12",
+    "userId": 1
+}
+
+###
+
+POST {{PREFIX}}/films/update-film-rating
+Content-Type: application/json
+
+{
+    "id": 1,
+    "rating": 4
+}
+
+###
+
+POST {{PREFIX}}/films/change-favorite
+Content-Type: application/json
+
+{
+    "id": 1,
+    "favorite": 0
+}
+
+###
+
+DELETE {{PREFIX}}/films/9
+
+###
+
+POST {{PREFIX}}/auth/login

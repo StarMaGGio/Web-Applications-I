@@ -10,3 +10,4 @@ This repository contains the evolution of the **Film Library** web application d
 * `Lab05`: re-designing the web application with React.
 * `Lab06`: implementing controlled forms to add/edit.
 * `Lab07`: multiple pages structure using React Routes.
+* `Lab08`: APIs integration to connect frontend and backend
