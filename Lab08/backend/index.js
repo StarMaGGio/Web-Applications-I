@@ -4,7 +4,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 import { param, body, validationResult } from 'express-validator'
 import passport from 'passport'
-import LocalStrategy from 'passport-validator'
+import LocalStrategy from 'passport-local'
 import session from 'express-session'
 
 import { FilmLibrary } from "./FilmLibrary.js"
@@ -22,6 +22,9 @@ function invalidInputParametersError(res, req) {
 }
 
 async function main() {
+
+/* --- SERVER INITIALIZATION AND CONFIGURATION --- */
+
     // Database initialization 
     const filmLibrary = new FilmLibrary()
 
@@ -41,57 +44,97 @@ async function main() {
     }
     app.use(cors(corsOptions))
 
-    // Passport configuration
-    passport.use(new LocalStrategy(async function verify(email, password, cb) {
-        const user = await filmLibrary.getUser(username, password)
+    // Passport and session configuration
+    passport.use(new LocalStrategy(async function verify(email, password, cb) { // cb is the callback function that we have to call at the end of the verification process, it takes three parameters: error, user, and info (optional)
+        const user = await filmLibrary.getUser(email, password)                 // Returns the user if the email and password are correct, null otherwise
 
-        if (!user) return cb(null, false, "Incorrect email or password.")
+        if (!user) return cb(null, false, "Incorrect email or password.")       // If the user is null, then the email and password are not correct, so we return false and an error message
         // else
-        return cb(null, user)
+        return cb(null, user)                                                   // If the user is not null, then the email and password are correct, so we return the user
     }))
 
-    // Continue passport configuration and session
+    passport.serializeUser(function (user, cb) {    // This function is called when the user is authenticated
+        cb(null, user)                              // We serialize the user by storing the whole user object in the session
+    })
 
-    /* ROUTES */
+    passport.deserializeUser(function (user, cb) {  // This function is called when the user makes a request and we need to deserialize the user from the session
+        return cb(null, user)                       // We deserialize the user by returning the user object stored in the session       
+    })
+
+    const isLoggedIn = (req, res, next) => {        // This is a middleware function that checks if the user is authenticated, if not it returns a 401 error
+        if(req.isAuthenticated()) {
+            return next()
+        }
+        console.log(req.user)
+        return res.status(401).json({error: "Not authorized!"})
+    }
+
+    app.use(session({
+        secret: "Secret phrase",                // This is the secret used to sign the session ID cookie 
+        resave: false,         
+        saveUninitialized: false
+    }))
+    app.use(passport.authenticate("session"))   // This middleware is used to initialize Passport and restore authentication state, if any, from the session
+
+/* --- ROUTES --- */
 
     // POST /auth/login
     app.post(PREFIX + '/auth/login', passport.authenticate("local"), (req, res) => {
         return res.status(201).json(req.user)
     })
 
-    // GET /films
-    app.get(PREFIX + '/films', (req, res) => {
-        filmLibrary.getAllFilms()
-            .then(films => res.json(films))
-            .catch(internalError(res))
+    // GET /sessions/current
+    app.get(PREFIX + '/sessions/current', (req, res) => {
+        if (req.isAuthenticated()) {
+            res.json(req.user)
+        } else {
+            res.status(401).json({error: "Not authenticated!"})
+        }
     })
 
-    // GET /films/favorites
-    app.get(PREFIX + '/films/favorites', (req, res) => {
-        filmLibrary.getFavoriteFilms()
-            .then(favFilms => res.json(favFilms))
-            .catch(internalError(res))
+    // DELETE /sessions/current
+    app.delete(PREFIX + '/sessions/current', (req, res) => {
+        req.logout(() => {
+            res.end()
+        })
     })
 
-    // GET /films/most-rated
-    app.get(PREFIX + '/films/most-rated', (req, res) => {
-        filmLibrary.getMostRatedFilms()
-            .then(mostRated => res.json(mostRated))
-            .catch(internalError(res))
-    })
+    app.use(isLoggedIn)
 
-    // GET /films/recent-seen
-    app.get(PREFIX + '/films/recent-seen', (req, res) => {
-        filmLibrary.getLastMonthSeenFilms()
-            .then(recentSeen => res.json(recentSeen))
-            .catch(internalError(res))
-    })
+    // GET /films/:filter
+    app.get(PREFIX + '/films/:filter', (req, res) => {
+        const userId = req.user.id;
 
-    // GET /films/unseen
-    app.get(PREFIX + '/films/unseen', (req, res) => {
-        filmLibrary.getUnseenFilms()
-            .then(unseen => res.json(unseen))
-            .catch(internalError(res))
+        switch (req.params.filter) {
+            case 'all-films':
+                filmLibrary.getAllFilms(userId)
+                    .then(films => res.json(films))
+                    .catch(internalError(res))
+                break;
+            case 'favorites':
+                filmLibrary.getFavoriteFilms(userId)
+                    .then(favFilms => res.json(favFilms))
+                    .catch(internalError(res))
+                break;
+            case 'best-rated':
+                filmLibrary.getMostRatedFilms(userId)
+                    .then(mostRated => res.json(mostRated))
+                    .catch(internalError(res))
+                break;
+            case 'seen-last-month':
+                filmLibrary.getLastMonthSeenFilms(userId)
+                    .then(recentSeen => res.json(recentSeen))
+                    .catch(internalError(res))
+                break;
+            case 'unseen':
+                filmLibrary.getUnseenFilms(userId)
+                    .then(unseen => res.json(unseen))
+                    .catch(internalError(res))
+                break;
+            default:
+                // return error: filter does not exists
+                break;
+        }
     })
 
     // GET /films/:id
@@ -201,6 +244,8 @@ async function main() {
             invalidInputParametersError(res, req)
         }
     })
+
+/* --- SERVER STARTUP --- */
 
     app.listen(3000, () => { console.log('Server started') })
 }

@@ -1,32 +1,24 @@
 import {Container, Row, Col} from 'react-bootstrap'
 import Sidebar from "./Sidebar"
 import FilmList from "./FilmList"
-import { useState } from 'react'
-import { useParams } from 'react-router'
+import { useState, useContext, useEffect } from 'react'
+import { useParams, Navigate } from 'react-router'
 import dayjs from 'dayjs'
+import UserContext from '../contexts/UserContext'
+import { getFilmsAPI } from '../api/api'
+import FilmLibrary from '../models/FilmLibrary.js'
 
 function Body(props) {
+    const user = useContext(UserContext)
+    if (!user.id)
+        return <Navigate to='/'/>
+
     let params = useParams()
-    props.setActiveFilter(params.activeFilter)
 
-    const filmList = props.library.list;
-
-    function getFilteredFilms() {
-    switch (params.activeFilter) {
-        case 'favorites':
-            return filmList.filter(f => f.favorite);
-        case 'best-rated':
-            return filmList.filter(f => f.rating == 5);
-        case 'seen-last-month':
-            return filmList.filter(f => f.watchDate && f.watchDate.isAfter(dayjs().subtract(1, 'month')));
-        case 'unseen':
-            return filmList.filter(f => f.watchDate == null)
-        default: // All
-            return filmList;
-        }
-    }
-
-    const filteredFilms = getFilteredFilms()
+    useEffect(() => {
+        props.setActiveFilter(params.activeFilter)                                             // Set the (new) Filter
+        getFilmsAPI(params.activeFilter).then(res => {props.setLibrary(new FilmLibrary(res))}) // Fetch films from backend by the active filter
+    }, [params.activeFilter])
 
     return(
         <>
@@ -40,7 +32,7 @@ function Body(props) {
                     {/* films list on the right */}
                     <Col xs={8}>
                         <FilmList  
-                            filteredFilms={filteredFilms}
+                            filteredFilms={props.library.list}
                             filterName={props.activeFilter}
                             setMode={props.setMode}
                             mode={props.mode}

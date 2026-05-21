@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router"
 import { Form, Button, Container, Row, Col } from "react-bootstrap"
-import { doLogin } from "../api/auth"
+import { doLoginAPI, doLogoutAPI } from "../api/auth"
 
 
 function LogInForm(props) {
@@ -23,8 +24,8 @@ function LogInForm(props) {
             }
             console.log(email, password)
 
-            const user = await doLogin(email, password) // Fetch user through API
-            // props.doLogin(user) // Do login in the frontend with the fetched user
+            const user = await doLoginAPI(email, password) // Fetch user through API
+            props.doLogin(user) // Do login in the frontend with the fetched user
         } catch (err) {
             setErrormsg(err.message)
         }
@@ -66,4 +67,17 @@ function LogInForm(props) {
     )
 }
 
-export default LogInForm
+function Logout(props) {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        doLogoutAPI().then(() => {
+            props.doLogin({id: undefined, name: undefined})
+            navigate('/')
+        })
+    }, [])
+
+    return "Logging out..."
+}
+
+export {LogInForm, Logout}

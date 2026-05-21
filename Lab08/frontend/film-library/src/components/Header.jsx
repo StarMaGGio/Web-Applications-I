@@ -1,4 +1,5 @@
 import {Navbar, Container, Nav, Form} from 'react-bootstrap'
+import { Link } from 'react-router'
 
 function Header(props) {
     
@@ -19,8 +20,9 @@ function Header(props) {
                                 style={{ width: '50vw', maxWidth: '500px', minWidth: '150px'}}
                                 placeholder="Search" />
                         </Form>
-                        <i className="bi bi-person-circle text-white fs-3"></i>
-                        <span className='text-white'>{props.user.name}</span>
+                        <i className="bi bi-person-circle text-white fs-3 me-2"></i>
+                        <span className='text-white me-2'>{props.user.name}</span>
+                        {props.user.name && <div><Link className='text-white' to='/logout'>Logout</Link></div>}
                     </Nav>
                 </Container>
             </Navbar>

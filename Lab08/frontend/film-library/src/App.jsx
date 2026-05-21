@@ -1,6 +1,6 @@
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router';
 import { Button, Container } from 'react-bootstrap';
 
@@ -10,9 +10,12 @@ import Film from './models/Film.js'
 import Header from './components/Header'
 import Body from './components/Body'
 import AddEditFilmForm from './components/AddEditFilmForm';
-import LogInForm from './components/LogInForm';
+import { LogInForm, Logout } from './components/LogInForm.jsx';
 
 import UserContext from './contexts/UserContext.js'
+
+import { checkSessionAPI } from './api/auth.js';
+import { getFilmsAPI } from './api/api.js';
 
 function App() {
   // Hooks
@@ -51,17 +54,16 @@ function App() {
     })
   }
 
-  // Function to simulate login
-  const doLogin = () => {
-    setUser({id: 1, name: 'User-A'})
+  // Try to restore login session on page reload
+  useEffect(() => {
+    checkSessionAPI().then(res => {
+      setUser({id: res.id, name: res.name})
+    })
+  }, [])
 
-    const populatedLibrary = new FilmLibrary()
-    populatedLibrary.addFilm(new Film(1, "Pulp Fiction", true, '03-10-2026', 4, 1))
-    populatedLibrary.addFilm(new Film(2, "21 Grams", false, '03-17-2026', 3, 1))
-    populatedLibrary.addFilm(new Film(3, "Star Wars", false, null, 0, 1))
-    populatedLibrary.addFilm(new Film(4, "Matrix", false, null, 0, 1))
-    populatedLibrary.addFilm(new Film(5, "Shrek 2", true, '03-21-2026', 5, 1))
-    setLibrary(populatedLibrary)
+  // Login action handler
+  const doLogin = (user) => {
+    setUser({id: user.id, name: user.name})
 
     navigate(`/film-library/${activeFilter}`)
   }
@@ -72,9 +74,10 @@ function App() {
       <Routes>
         <Route path='/' element={<MainLayout user={user}/>}>
           <Route index element={<LoginView doLogin={doLogin} activeFilter={activeFilter}/>} />
-          <Route path='film-library/:activeFilter' element={<Body library={library} activeFilter={activeFilter} setActiveFilter={setActiveFilter} setMode={setMode} deleteFilm={deleteFilm} mode={mode} setSelectedFilmId={setSelectedFilmId} />}/>
+          <Route path='film-library/:activeFilter' element={<Body library={library} setLibrary={setLibrary} setActiveFilter={setActiveFilter} setMode={setMode} deleteFilm={deleteFilm} mode={mode} setSelectedFilmId={setSelectedFilmId} />}/>
           <Route path='add-film' element={<AddEditFilmForm setMode={setMode} addFilm={addFilm} goal={mode} activeFilter={activeFilter} />}/>
           <Route path='edit-film' element={<AddEditFilmForm setMode={setMode} editFilm={editFilm} goal={mode} selectedFilmId={selectedFilmId} activeFilter={activeFilter} />}/>
+          <Route path='logout' element={<Logout doLogin={doLogin} />} />
           <Route path="*" element={<NoMatch/>} />
         </Route>
       </Routes>
@@ -100,9 +103,7 @@ function LoginView(props) {
   
   return (
     <>
-      <LogInForm/>
-      {/* <p>"Please login to see your films..."</p>
-      <Button onClick={() => props.doLogin()}>Login</Button> */}
+      <LogInForm doLogin={props.doLogin}/>
     </>
   )
 }

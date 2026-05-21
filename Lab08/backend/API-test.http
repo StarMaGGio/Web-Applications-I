@@ -74,3 +74,23 @@ DELETE {{PREFIX}}/films/9
 ###
 
 POST {{PREFIX}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "mattia.maggioni@polito.it",
+    "password": "Dogcat26"
+}
+
+###
+
+POST {{PREFIX}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "mattia.maggioni@polito.it",
+    "password": "Dogcat2"
+}
+
+###
+
+GET {{PREFIX}}/films/seen-last-month

@@ -3,6 +3,7 @@ import AddEditFilmForm from "./AddEditFilmForm";
 import { useState } from "react";
 import { Outlet } from "react-router";
 import { useNavigate } from "react-router";
+import dayjs from "dayjs";
 
 function FilmList(props) {
   const filteredFilms = props.filteredFilms;
@@ -51,7 +52,7 @@ function FilmRow(props) {
       </td>
       <td className="text-center text-nowrap">
         <span>
-          {film.watchDate != null ? film.watchDate.format("DD MMMM, YYYY") : ""}
+          {film.watchDate != null ? dayjs(film.watchDate).format("DD MMMM, YYYY") : ""}
         </span>
       </td>
       <td>

@@ -1,6 +1,9 @@
+/* --- DAO --- */
+
 import sqlite from 'sqlite3'
 import dayjs from 'dayjs'
 import { Film } from './Film.js'
+import crypto from 'crypto'
 
 const DATE_FORMAT = 'YYYY-MM-DD'
 
@@ -18,10 +21,10 @@ function FilmLibrary() {
     })
 
     // Method to retrieve all the stored films and return them in a Promise
-    this.getAllFilms = function() {
+    this.getAllFilms = function(userId) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM films'
-            db.all(sql, (err, rows) => {
+            const sql = 'SELECT * FROM films WHERE userId = ?'
+            db.all(sql, [userId], (err, rows) => {
                 if(err) {
                     reject(err)
                 } else {
@@ -32,10 +35,10 @@ function FilmLibrary() {
     }
 
     // Method to retrieve all favorite films
-    this.getFavoriteFilms = function() {
+    this.getFavoriteFilms = function(userId) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM films WHERE isFavorite == 1'
-            db.all(sql, (err, rows) => {
+            const sql = 'SELECT * FROM films WHERE isFavorite == 1 AND userId = ?'
+            db.all(sql, [userId], (err, rows) => {
                 if(err) {
                     reject(err)
                 } else {
@@ -46,10 +49,10 @@ function FilmLibrary() {
     }
 
     // Method to retrieve all films before the date passed as parameter
-    this.getFilmsBeforeDate = function(date) {
+    this.getFilmsBeforeDate = function(date, userId) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM films WHERE watchDate < ?'
-            db.all(sql, [date.format(DATE_FORMAT)], (err, rows) => {
+            const sql = 'SELECT * FROM films WHERE watchDate < ? AND userId = ?'
+            db.all(sql, [date.format(DATE_FORMAT), userId], (err, rows) => {
                 if(err) {
                     reject(err)
                 } else {
@@ -107,13 +110,13 @@ function FilmLibrary() {
     }
 
     // Method to retrieve all films seen in the last month
-    this.getLastMonthSeenFilms = function() {
+    this.getLastMonthSeenFilms = function(userId) {
         const today = dayjs().format(DATE_FORMAT)
         const lastMonth = dayjs().subtract(1, 'month').format(DATE_FORMAT)
 
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM films WHERE watchDate >= ? AND watchDate <= ? ORDER BY watchDate DESC'
-            db.all(sql, [lastMonth, today], (err, rows) => {
+            const sql = 'SELECT * FROM films WHERE watchDate >= ? AND watchDate <= ? AND userId = ? ORDER BY watchDate DESC'
+            db.all(sql, [lastMonth, today, userId], (err, rows) => {
                 if(err) reject(err)
                 else resolve(mapRowsToFilms(rows))
             })
@@ -121,10 +124,10 @@ function FilmLibrary() {
     }
 
     // Method to retrieve the most rated films (rating == 5)
-    this.getMostRatedFilms = function() {
+    this.getMostRatedFilms = function(userId) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM films WHERE rating == 5'
-            db.all(sql, (err, rows) => {
+            const sql = 'SELECT * FROM films WHERE rating == 5 AND userId = ?'
+            db.all(sql, [userId], (err, rows) => {
                 if(err) reject(err)
                 else resolve(mapRowsToFilms(rows))
             })
@@ -132,10 +135,10 @@ function FilmLibrary() {
     }
 
     // Method to return unseen films (watchDate IS NULL)
-    this.getUnseenFilms = function() {
+    this.getUnseenFilms = function(userId) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM films WHERE watchDate IS NULL'
-            db.all(sql, (err, rows) => {
+            const sql = 'SELECT * FROM films WHERE watchDate IS NULL AND userId = ?'
+            db.all(sql, [userId], (err, rows) => {
                 if(err) reject(err)
                 else resolve(mapRowsToFilms(rows))
             })
@@ -177,9 +180,30 @@ function FilmLibrary() {
         })
     }
 
-    // Method to return a user by its email and password
+    // Method to return a user by its email and password from the database
     this.getUser = function(email, password) {
-        //...
+        return new Promise((resolve, reject) => {
+            const sql = "SELECT * FROM users WHERE email = ?"
+            db.get(sql, [email], (err, row) => {
+                if (err) {                      // DB error
+                    reject(err)
+                }
+                else if (row === undefined) {   // Email not found
+                    resolve(false)
+                }
+                else {                          // Email found -> check password
+                    const user = {id: row.id, email: row.email, name: row.name}
+                    crypto.scrypt(password, row.salt, 16, function(err, hashedPassword) {
+                        if (err) reject(err)    // Error in hashing the password
+                        if (!crypto.timingSafeEqual(Buffer.from(row.hash, "hex"), hashedPassword))
+                            resolve(false)      // Wrong password
+                        else
+                            resolve(user)       // Correct password -> return user information
+                    })
+                }
+            })
+        })
+        
     }
 }
 

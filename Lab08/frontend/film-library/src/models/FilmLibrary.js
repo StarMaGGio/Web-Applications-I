@@ -3,6 +3,12 @@ import dayjs from 'dayjs';
 function FilmLibrary(oldList = []) {
     this.list = [...oldList] // Copy the list to keep it immutable
 
+    this.init = function(films) {
+        for (const film of films) {
+            this.list.push(new Film(film.id, film.title, film.favorite, film.watchDate, film.rating, film.userId))
+        }
+    };
+
     // Method to add a new film
     this.addFilm = function(film) {
         this.list.push(film)
