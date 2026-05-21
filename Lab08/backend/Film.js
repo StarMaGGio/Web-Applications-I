@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 
 const DATE_FORMAT = 'YYYY-MM-DD'
 
-function Film(id, title, favorite=false, watchDate=null, rating=null, userId=1) {
+function Film(id, title, favorite=0, watchDate=null, rating=null, userId) {
     this.id = id
     this.title = title
     this.favorite = favorite

@@ -3,6 +3,7 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import validator from 'validator';
 import { useNavigate } from "react-router";
+import { addFilmAPI, editFilmAPI } from "../api/api";
 
 function AddEditFilmForm(props) {
 
@@ -30,9 +31,9 @@ function AddEditFilmForm(props) {
 
     // Update film list using props
     if (props.goal == 'add')
-      props.addFilm(title, false, dayjs(watchDate), rating)
+      addFilmAPI(title, 0, dayjs(watchDate).format('YYYY-MM-DD'), rating)
     if (props.goal == 'edit')
-      props.editFilm(props.selectedFilmId, title, false, dayjs(), rating)
+      editFilmAPI(props.selectedFilmId, title, 0, dayjs(), rating)
 
     // Close the form
     props.setMode("display")

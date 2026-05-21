@@ -161,8 +161,9 @@ async function main() {
         body('rating').isInt({min:0, max:5})
     ], async (req, res) => {
         if (validationResult(req).isEmpty()) {
+            const userId = req.user.id
             const raw_film = req.body
-            const film = new Film(null, raw_film.title, raw_film.favorite, raw_film.watchDate, raw_film.rating, 1)
+            const film = new Film(null, raw_film.title, raw_film.favorite, raw_film.watchDate, raw_film.rating, userId)
             try {
                 const id = await filmLibrary.addNewFilm(film)
                 res.status(201).json({id: id})
@@ -178,15 +179,15 @@ async function main() {
     app.post(PREFIX + '/films/update-film', [
         body('id').isInt({min:0}).notEmpty(),
         body('title').optional().isString().notEmpty(),
-        body('favorite').optional().isInt({min:0, max:1}),
-        body('watchDate').optional().isDate({format: DATE_FORMAT}),
-        body('rating').optional().isInt({min:0, max:5}),
+        body('favorite').optional({nullable: true}).isInt({min:0, max:1}),
+        body('watchDate').optional({nullable: true}).isDate({format: DATE_FORMAT}),
+        body('rating').optional({nullable: true}).isInt({min:0, max:5}),
         body('userId').optional().isInt({min:0})
     ], async (req, res) => {
         if (validationResult(req).isEmpty()) {
             const raw_update = req.body
             try {
-                res.json(await filmLibrary.updateFilm(raw_update.id, raw_update.title, raw_update.isFavorite, raw_update.rating, raw_update.watchDate, raw_update.userId))
+                res.json(await filmLibrary.updateFilm(raw_update.id, raw_update.title, raw_update.favorite, raw_update.rating, raw_update.watchDate, raw_update.userId))
             } catch (err) {
                 internalError(err)
             }
